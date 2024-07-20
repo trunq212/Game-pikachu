@@ -1,23 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Find the Pair Game gốc </title>
+    <title>Game Pikachu</title>
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-    <div id="game-container" class="container"></div>
-    <button id="" class=""><a style="text-decoration: none; color: white;" href="index.html">HOME</a></button>
-    <button id="reset-button" class="reset">Reset</button>
-    <h1>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="game.html">Game</a>
+    </nav>
+    <div id="game-container">
         <div id="player-name-display"></div>
-        <div id="timer-display">Time left: 00:00</div>
-        <div id="score-display">Score: 0 </div>
-    </h1>
-    <script src="script.js"> </script>
+        <div id="score-display"></div>
+        <div id="level-display"></div>
+        <div id="timer-display"></div>
+        <button id="pause-button">Pause</button>
+        <button id="reset-button">Reset</button>
+        <div id="overlay">Paused</div>
+        <!-- Chỗ cho các ô trò chơi sẽ được tạo bởi JavaScript -->
+    </div>
+    <div id="tiles-container"></div>
+    <script src="script.js"></script>
 </body>
-
 </html>

@@ -1,84 +1,172 @@
-* {
+body {
+  background-image: url("https://scr.vn/wp-content/uploads/2020/07/H%C3%ACnh-n%E1%BB%81n-Pokemon-%C4%91%E1%BA%B9p-nh%E1%BA%A5t.jpg");
+  background-size: cover;
+  background-position: center;
+  font-family: Arial, sans-serif;
   margin: 0;
-  padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  color: #000000;
 }
 
-body {
-  background-color: rgb(172, 184, 161);
+nav {
+  width: 100%;
+  background-color: #333;
+  color: rgb(0, 0, 0);
+  display: flex;
+  justify-content: center;
+  padding: 10px;
 }
-.container {
-  position: relative;
-  display: grid;
-  grid-template-columns: repeat(5, 200px);
-  /* Giả sử mỗi ô grid có chiều rộng 80px */
-  width: auto;
-  height: 500px;
+
+nav a {
+  color: white;
+  text-decoration: none;
+  margin: 0 15px;
+}
+
+nav a:hover {
+  text-decoration: underline;
+}
+
+.all {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+  background-image: url("https://wallpapers-clan.com/wp-content/uploads/2023/12/pokemon-pokeball-pattern-desktop-wallpaper-preview.jpg");
+  background-size: cover;
+  background-position: center;
+  background: rgba(0, 0, 0, 0.7);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+#game-container {
+  display: flex;
+  align-items: center; /* Căn giữa phần tử theo chiều ngang */
+  justify-content: center; /* Căn giữa phần tử theo chiều dọc */
+  padding: 20px;
+  border-radius: 10px;
+  background-color: rgb(255, 255, 255); /* Nền trắng với độ trong suốt nhẹ */
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3); /* Đổ bóng nhẹ cho container */
+  width: 100%; /* Chiều rộng của game container */
+  height: auto; /* Chiều cao tự động */
+  gap: 20px;
+}
+
+#game-container > div {
+  margin: 10px 0; /* Khoảng cách giữa các phần tử */
+}
+
+
+#pause-button,
+#reset-button {
+  padding: 10px 20px;
+  font-size: 1em;
+  border: none;
+  border-radius: 5px;
+  background-color: #ffcc00;
+  color: #333;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin: 10px;
+}
+
+#pause-button:hover,
+#reset-button:hover {
+  background-color: #ff9900;
+}
+
+#overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  display: flex;
   align-items: center;
   justify-content: center;
-  margin: auto;
-  gap: 10px;
-}
-.tile {
-  width: 100px;
-  height: 100px;
-  background-color: #ccc; /* Màu nền cho ô trò chơi */
-  background-size: cover;
-  background-position: center;
-  cursor: pointer;
+  font-size: 2em; /* Tăng kích thước chữ để dễ đọc */
+  display: none; /* Ẩn overlay khi không tạm dừng */
 }
 
-.tile.hidden {
-  background-image: none; /* Ẩn ảnh trong ô trò chơi */
-}
-
-.tile {
-  width: 100%;
-  /* Ảnh sẽ lấp đầy toàn bộ không gian của ô grid */
-  height: 100%;
-  /* Ảnh sẽ lấp đầy toàn bộ không gian của ô grid */
-  cursor: pointer;
-  background-color: white;
-  background-size: cover;
-  background-position: center;
-  border: 2px solid transparent;
-}
-
-.tile.flipped {
-  border: 2px solid #000;
-}
-
-/* Xóa thuộc tính position và transform của .reset */
-.reset {
-  width: 100px;
-  height: 50px;
-  /* position: absolute; */
-  /* top: 50%; */
-  /* left: 50%; */
-  /* transform: translate(-50%, -50%); */
-}
 
 .welcome-container {
+  background-color: #ccccccd8;
+  padding: 20px;
+  border-radius: 10px;
   text-align: center;
-  background-color: #fff;
-  border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 50%;
+  height: auto;
+
+}
+
+.welcome-container h1 {
+  font-size: 3em;
+  margin-bottom: 10px;
+}
+
+.welcome-container p {
+  font-size: 1.2em;
+  margin-bottom: 20px;
 }
 
 input[type="text"] {
   padding: 10px;
-  margin: 10px;
+  font-size: 1em;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  border: none;
+  outline: none;
 }
 
 button {
-  width: 100px;
-  height: 50px;
-  background-color: #007bff;
-  color: #fff;
+  padding: 10px 20px;
+  font-size: 1em;
   border: none;
   border-radius: 5px;
+  background-color: #ffcc00;
+  color: #333;
   cursor: pointer;
+  transition: background-color 0.3s;
 }
 
 button:hover {
-  background-color: #0056b3;
+  background-color: #ff9900;
+}
+
+.tile.flipped {
+  background-color: #fff;
+  transform: scale(1.1);
+}
+
+
+#tiles-container {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Tăng kích thước tối thiểu */
+  grid-gap: 15px; /* Khoảng cách giữa các ô */
+  max-width: 100%;
+  margin: 20px auto;
+}
+
+
+.tile {
+  width: 70%; /* Đảm bảo chiếm toàn bộ chiều rộng của ô */
+  height: 150px; /* Điều chỉnh chiều cao theo nhu cầu */
+  background-color: #ccc;
+  background-size: cover;
+  background-position: center;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s;
+  border-radius: 10px;
+}
+
+
+
+#player-name-display {
+  font-size: 1.5em;
+  font-weight: bold;
 }

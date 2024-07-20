@@ -1,13 +1,3 @@
-"use strict";
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -17,113 +7,203 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var _a, _b;
-const levels = [
-    { pairs: 5, countdownDuration: 120 }, // Màn 1
-    { pairs: 10, countdownDuration: 180 }, // Màn 2
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
+var levels = [
+    { pairs: 6, countdownDuration: 120 }, // Level 1
+    { pairs: 9, countdownDuration: 200 }, // Level 2
+    { pairs: 15, countdownDuration: 300 }, // Level 3
 ];
-let levelIndex = 0;
-let startTime;
-let countdownInterval = null;
-let firstCard = null;
-let secondCard = null;
-let pairsFound = 0;
-let score = 0;
+var levelIndex = 0;
+var startTime;
+var countdownInterval = null;
+var firstCard = null;
+var secondCard = null;
+var pairsFound = 0;
+var score = 0;
+var globalScore = 0;
+var isPaused = false;
+var remainingTimeAtPause = 0;
+document.addEventListener("DOMContentLoaded", function () {
+    var startButton = document.getElementById("start-button");
+    var playerNameInput = document.getElementById("player-name");
+    var errorMessage = document.getElementById("error-message");
+    startButton === null || startButton === void 0 ? void 0 : startButton.addEventListener("click", function () {
+        var playerName = playerNameInput.value.trim();
+        if (playerName.length >= 6) {
+            localStorage.setItem("playerName", playerName);
+            window.location.href = 'game.html'; // Chuyển sang trang game
+        }
+        else {
+            if (errorMessage) {
+                errorMessage.style.display = "block";
+                errorMessage.textContent = "Tên người chơi phải có ít nhất 6 ký tự.";
+            }
+        }
+    });
+    // If on game page, initialize the game
+    if (window.location.pathname.endsWith('game.html')) {
+        var pauseButton = document.getElementById("pause-button");
+        var overlay = document.getElementById("overlay");
+        var resetButton = document.getElementById("reset-button");
+        if (pauseButton)
+            pauseButton.addEventListener("click", function () {
+                if (!isPaused) {
+                    pauseGame();
+                }
+                else {
+                    resumeGame();
+                }
+            });
+        if (resetButton)
+            resetButton.addEventListener("click", resetGame);
+        // Load player name
+        var playerNameDisplay = document.getElementById("player-name-display");
+        var playerName = localStorage.getItem("playerName");
+        if (playerNameDisplay && playerName) {
+            playerNameDisplay.textContent = "Player name: " + playerName;
+        }
+        else if (playerNameDisplay) {
+            playerNameDisplay.textContent = "Player: Unknown";
+        }
+        // Start the game
+        createBoard();
+    }
+});
 function shuffle(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
+    var _a;
+    for (var i = array.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        _a = [array[j], array[i]], array[i] = _a[0], array[j] = _a[1];
     }
     return array;
 }
 function startCountdown(duration) {
     startTime = Date.now();
     updateTimer(duration);
-    countdownInterval = setInterval(() => updateTimer(duration), 1000);
+    countdownInterval = setInterval(function () { return updateTimer(duration); }, 1000);
 }
 function updateTimer(duration) {
-    const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
-    const remainingTime = duration - elapsedTime;
+    var elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+    var remainingTime = duration - elapsedTime;
     if (remainingTime <= 0) {
         clearInterval(countdownInterval);
-        alert('Hết giờ!');
+        alert("Hết giờ!");
         resetGame();
     }
     else {
-        const minutes = Math.floor(remainingTime / 60);
-        const seconds = remainingTime % 60;
-        const timerDisplay = document.getElementById('timer-display');
+        var minutes = Math.floor(remainingTime / 60);
+        var seconds = remainingTime % 60;
+        var timerDisplay = document.getElementById("timer-display");
         if (timerDisplay) {
-            timerDisplay.textContent = `Thời gian còn lại: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            timerDisplay.textContent = "Time left: ".concat(minutes, ":").concat(seconds < 10 ? "0" : "").concat(seconds);
         }
     }
 }
 function createBoard() {
-    return __awaiter(this, void 0, void 0, function* () {
-        const pairs = levels[levelIndex].pairs;
-        const images = Array.from({ length: pairs }, (_, i) => (i + 1).toString());
-        const imagePairs = [...images, ...images];
-        const shuffledPairs = shuffle(imagePairs);
-        const gameContainer = document.getElementById('game-container');
-        if (!gameContainer)
-            return;
-        gameContainer.innerHTML = ''; // Xóa bảng trò chơi trước khi tạo lại
-        score = 0; // Reset điểm khi tạo lại bảng
-        for (let i = 0; i < shuffledPairs.length; i++) {
-            const tile = document.createElement('div');
-            tile.classList.add('tile');
-            tile.dataset.index = shuffledPairs[i];
-            // Thêm ảnh màu trắng ban đầu
-            tile.style.backgroundImage = `url(https://static.vecteezy.com/system/resources/thumbnails/022/004/951/small_2x/ultra-ball-icon-pokemon-free-vector.jpg)`;
-            // Thêm sự kiện click vào ô để hiển thị ảnh
-            tile.addEventListener('click', handleTileClick);
-            gameContainer.appendChild(tile);
-        }
-        startCountdown(levels[levelIndex].countdownDuration); // Bắt đầu đếm ngược với thời gian của cấp độ hiện tại
+    return __awaiter(this, void 0, void 0, function () {
+        var pairs, images, imagePairs, shuffledPairs, tilesContainer, i, tile, levelDisplay;
+        return __generator(this, function (_a) {
+            pairs = levels[levelIndex].pairs;
+            images = Array.from({ length: pairs }, function (_, i) { return (i + 1).toString(); });
+            imagePairs = __spreadArray(__spreadArray([], images, true), images, true);
+            shuffledPairs = shuffle(imagePairs);
+            tilesContainer = document.getElementById("tiles-container");
+            if (!tilesContainer)
+                return [2 /*return*/];
+            tilesContainer.innerHTML = ""; // Clear the game board before creating a new one
+            score = 0; // Reset score when creating a new board
+            for (i = 0; i < shuffledPairs.length; i++) {
+                tile = document.createElement("div");
+                tile.classList.add("tile");
+                tile.dataset.index = shuffledPairs[i];
+                // Add default image initially
+                tile.style.backgroundImage = "url(https://st.quantrimang.com/photos/image/2016/08/11/Pokemon-Go-Fastball.jpg)";
+                // Add click event to tile
+                tile.addEventListener("click", handleTileClick);
+                tilesContainer.appendChild(tile);
+            }
+            startCountdown(levels[levelIndex].countdownDuration); // Start countdown with current level time
+            levelDisplay = document.getElementById("level-display");
+            if (levelDisplay) {
+                levelDisplay.textContent = "Level ".concat(levelIndex + 1);
+            }
+            return [2 /*return*/];
+        });
     });
 }
 function handleTileClick(event) {
-    const clickedTile = event.target;
+    var clickedTile = event.target;
     if (!firstCard) {
         firstCard = clickedTile;
-        firstCard.classList.add('flipped');
+        firstCard.classList.add("flipped");
         showImage(firstCard);
     }
     else if (!secondCard && clickedTile !== firstCard) {
         secondCard = clickedTile;
-        secondCard.classList.add('flipped');
+        secondCard.classList.add("flipped");
         showImage(secondCard);
-        const firstIndex = firstCard.dataset.index;
-        const secondIndex = secondCard.dataset.index;
-        if (firstIndex && secondIndex && firstIndex === secondIndex) {
-            // Tìm thấy một cặp
+        // Check for match
+        if (firstCard.dataset.index === secondCard.dataset.index) {
             pairsFound++;
-            score += 10; // Cộng điểm nếu chọn đúng
+            hideMatchedPair();
+            firstCard = null;
+            secondCard = null;
+            globalScore += 10; // Increase global score for a match
             updateScore();
-            // Ẩn hai ô đã chọn đúng
-            setTimeout(() => {
-                hideMatchedPair();
-            }, 500);
             if (pairsFound === levels[levelIndex].pairs) {
-                // Tất cả các cặp được tìm thấy, chuyển sang cấp độ tiếp theo
-                clearInterval(countdownInterval); // Dừng đếm ngược
+                // All pairs found, move to next level
+                clearInterval(countdownInterval); // Stop countdown
                 if (levelIndex < levels.length - 1) {
-                    levelIndex++; // Tăng cấp độ nếu chưa phải cấp độ cuối cùng
-                    alert(`Hoàn thành màn ${levelIndex + 1}!`);
-                    resetGame(); // Reset game với màn mới
+                    levelIndex++; // Increase level if not the last level
+                    alert("Ho\u00E0n th\u00E0nh m\u00E0n ".concat(levelIndex + 1, "!"));
+                    resetGame(); // Reset game for new level
                 }
                 else {
-                    alert('Xin chúc mừng! Bạn đã hoàn thành tất cả các màn!');
-                    resetGame(); // Reset game nếu đã hoàn thành tất cả các màn
+                    alert("Xin chúc mừng! Bạn đã hoàn thành tất cả các màn!");
+                    resetGame(); // Reset game if all levels are completed
                 }
             }
         }
         else {
-            // Không phải cặp
-            updateScore();
-            setTimeout(() => {
-                firstCard === null || firstCard === void 0 ? void 0 : firstCard.classList.remove('flipped');
-                secondCard === null || secondCard === void 0 ? void 0 : secondCard.classList.remove('flipped');
+            // Not a match
+            setTimeout(function () {
+                firstCard === null || firstCard === void 0 ? void 0 : firstCard.classList.remove("flipped");
+                secondCard === null || secondCard === void 0 ? void 0 : secondCard.classList.remove("flipped");
                 hideImage(firstCard);
                 hideImage(secondCard);
                 firstCard = null;
@@ -133,144 +213,77 @@ function handleTileClick(event) {
     }
 }
 function hideMatchedPair() {
-    // Ẩn hai ô đã chọn đúng
-    firstCard === null || firstCard === void 0 ? void 0 : firstCard.remove();
-    secondCard === null || secondCard === void 0 ? void 0 : secondCard.remove();
+    if (firstCard && secondCard) {
+        firstCard.style.visibility = "hidden";
+        secondCard.style.visibility = "hidden";
+    }
     firstCard = null;
     secondCard = null;
 }
 function showImage(card) {
     if (card) {
-        const index = card.dataset.index;
+        var index = card.dataset.index;
         if (index) {
-            const imageUrl = `https://pokeapi.co/api/v2/pokemon/${index}`;
+            var imageUrl = "https://pokeapi.co/api/v2/pokemon/".concat(index);
             fetch(imageUrl)
-                .then(response => {
+                .then(function (response) {
                 if (!response.ok) {
-                    throw new Error('Không thể tải dữ liệu');
+                    throw new Error("Không thể tải dữ liệu");
                 }
                 return response.json();
             })
-                .then((pokemonData) => {
-                const imageUrl = pokemonData.sprites.front_default;
-                card.style.backgroundImage = `url(${imageUrl})`;
+                .then(function (pokemonData) {
+                var imageUrl = pokemonData.sprites.front_default;
+                card.style.backgroundImage = "url(".concat(imageUrl, ")");
             })
-                .catch(error => {
-                console.error('Lỗi khi tải dữ liệu Pokémon:', error);
+                .catch(function (error) {
+                console.error("Lỗi khi tải dữ liệu Pokémon:", error);
             });
         }
     }
 }
 function hideImage(card) {
     if (card) {
-        card.style.backgroundImage = `url(https://static.vecteezy.com/system/resources/thumbnails/022/004/951/small_2x/ultra-ball-icon-pokemon-free-vector.jpg)`;
+        card.style.backgroundImage = "url(https://st.quantrimang.com/photos/image/2016/08/11/Pokemon-Go-Fastball.jpg)";
     }
 }
 function resetGame() {
-    clearInterval(countdownInterval); // Dừng đếm ngược
+    clearInterval(countdownInterval); // Stop countdown
     pairsFound = 0;
-    score = 0; // Reset điểm khi reset game
+    score = 0; // Reset score
     updateScore();
     firstCard = null;
     secondCard = null;
-    createBoard(); // Tạo lại bảng trò chơi với màn mới
+    createBoard(); // Create new game board
 }
 function updateScore() {
-    const scoreDisplay = document.getElementById('score-display');
+    var scoreDisplay = document.getElementById("score-display");
     if (scoreDisplay) {
-        scoreDisplay.textContent = `Điểm: ${score}`;
+        scoreDisplay.textContent = "Score: ".concat(globalScore);
     }
 }
-window.addEventListener('DOMContentLoaded', () => {
-    createBoard(); // Bắt đầu trò chơi với màn đầu tiên
-    const gameContainer = document.getElementById('game-container');
-    if (gameContainer)
-        gameContainer.addEventListener('click', handleTileClick);
-    const resetButton = document.getElementById('reset-button');
-    if (resetButton)
-        resetButton.addEventListener('click', resetGame);
-});
-(_a = document.getElementById('start-button')) === null || _a === void 0 ? void 0 : _a.addEventListener('click', () => {
-    const playerNameInput = document.getElementById('player-name');
-    const playerName = playerNameInput ? playerNameInput.value.trim() : '';
-    if (playerName !== '') {
-        localStorage.setItem('playerName', playerName);
-        window.location.href = './game.html'; // Chuyển hướng đến trang game.html
-    }
-    else {
-        alert('Vui lòng nhập tên của bạn!');
-    }
-});
-document.addEventListener('DOMContentLoaded', () => {
-    const playerNameDisplay = document.getElementById('player-name-display');
-    const playerName = localStorage.getItem('playerName');
-    if (playerNameDisplay && playerName) {
-        playerNameDisplay.textContent = 'Người chơi: ' + playerName;
-    }
-    else {
-        if (playerNameDisplay)
-            playerNameDisplay.textContent = 'Người chơi: Không xác định';
-    }
-});
-// Decorator để đảm bảo độ dài tối thiểu của tên người chơi
-function validatePlayerNameLength(minLength) {
-    return function (target, propertyKey, descriptor) {
-        const originalMethod = descriptor.value;
-        descriptor.value = function (...args) {
-            const playerNameInput = document.getElementById("player-name");
-            const playerName = playerNameInput ? playerNameInput.value.trim() : "";
-            if (playerName.length >= minLength) {
-                return originalMethod.apply(this, args); // Thực thi phương thức gốc
-            }
-            else {
-                const errorMessageElement = document.getElementById("error-message");
-                if (errorMessageElement) {
-                    errorMessageElement.innerText = `Tên người chơi phải có ít nhất ${minLength} ký tự.`;
-                    errorMessageElement.style.display = "block";
-                }
-                else {
-                    alert(`Tên người chơi phải có ít nhất ${minLength} ký tự.`);
-                }
-                return false; // Trả về false khi xác thực không thành công
-            }
-        };
-        return descriptor;
-    };
+function resetScore() {
+    globalScore = 0;
+    updateScore();
 }
-// Hàm xử lý kiểm tra tên người chơi
-function validatePlayerName(event) {
-    event.preventDefault(); // Ngăn chặn hành động mặc định của sự kiện "click"
-    const playerNameInput = document.getElementById("player-name");
-    const playerName = playerNameInput ? playerNameInput.value.trim() : "";
-    if (playerName !== "") {
-        localStorage.setItem("playerName", playerName);
-        window.location.href = "./game.html"; // Chuyển tiếp sang trang game
-    }
-    else {
-        const errorMessageElement = document.getElementById("error-message");
-        if (errorMessageElement) {
-            errorMessageElement.innerText = "Vui lòng nhập tên của bạn!";
-            errorMessageElement.style.display = "block";
+function pauseGame() {
+    if (!isPaused) {
+        isPaused = true;
+        clearInterval(countdownInterval); // Stop countdown
+        var overlay = document.getElementById("overlay");
+        if (overlay) {
+            overlay.style.display = "flex"; // Show overlay
         }
-        else {
-            alert("Vui lòng nhập tên của bạn!");
+        remainingTimeAtPause = Math.floor((Date.now() - startTime) / 1000);
+    }
+}
+function resumeGame() {
+    if (isPaused) {
+        isPaused = false;
+        startCountdown(levels[levelIndex].countdownDuration - remainingTimeAtPause); // Resume countdown
+        var overlay = document.getElementById("overlay");
+        if (overlay) {
+            overlay.style.display = "none"; // Hide overlay
         }
     }
 }
-class PlayerNameValidator {
-    static validate(event) {
-        validatePlayerName(event);
-    }
-}
-__decorate([
-    validatePlayerNameLength(7),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [MouseEvent]),
-    __metadata("design:returntype", void 0)
-], PlayerNameValidator, "validate", null);
-// Gán hàm đã được trang trí cho sự kiện click của nút "Start"
-(_b = document.getElementById("start-button")) === null || _b === void 0 ? void 0 : _b.addEventListener("click", (event) => {
-    event.preventDefault(); // Ngăn chặn hành động mặc định của sự kiện "click"
-    // Thực hiện xác thực tên người chơi
-    PlayerNameValidator.validate(event);
-});
